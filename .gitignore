@@ -1,4 +1,5 @@
 *
+!autoload
 !ftdetect
 !ftplugin
 !vimrc
