@@ -26,24 +26,37 @@ func! Tree()
 	endif
 endfunc
 
-func! FzF(cmd)
-	let s:regr = @r
+func! FzF(cmd,...)
+	let l:regr = @r
+	let l:dir = input('Директория поиска: ','')
 
-	let s:dir = input('Директория просмотра: ','.')
-
-	call setreg('r',':!find ' . s:dir . ' 2>/dev/null|fzf|head -n1|xclip -i')
+	if a:0 > 0
+		call setreg('r',':!grep --line-buffered -rn "" ' . l:dir . '* 2>/dev/null | fzf --query=' .@".'|cut -d":" -f1,2|xclip -i')
+	else
+		call setreg('r',':!find ' . l:dir . ' 2>/dev/null|fzf|head -n1|xclip -i')
+	endif
 
 	normal @r
-	call setreg('r',s:regr)
-	exec Clip(a:cmd)
+
+	call setreg('r',l:regr)
+
+	let l:fname = split(Clip(),':')
+
+	if get(l:fname,0) != '0'
+		exec a:cmd . ' ' . l:fname[0]
+
+		if get(l:fname,1) != '0'
+			exec l:fname[1]
+		endif
+	endif
 endfunc
 
 func! Clip(...)
-	let s:fname = system('xclip -o')
-	if empty(s:fname)
+	let l:clip = system('xclip -o')
+	if empty(l:clip)
 		return
 	endif
-	return (a:0 > 0 ? a:1 . ' ' : '') . substitute(s:fname,'\n$','','')
+	return (a:0 > 0 ? a:1 . ' ' : '') . substitute(l:clip,'\n$','','')
 endfunc
 
 syntax on
@@ -67,4 +80,10 @@ inoremap <silent> <F12> <ESC>:call Tree()<CR>
 
 noremap <C-f> :call FzF('e')<CR>
 noremap <C-t> :call FzF('tabe')<CR>
+
+vnoremap <C-f> ""y:call FzF('e','')<CR>
+vnoremap <C-t> ""y:call FzF('tabe','')<CR>
+
+inoremap <C-f> <C-o>:call FzF('e')<CR>
+inoremap <C-t> <C-o>:call FzF('tabe')<CR>
 
