@@ -29,26 +29,38 @@ endfunc
 func! FzF(cmd,...)
 	let l:regr = @r
 	let l:dir = input('Директория поиска: ','')
+	let l:tmp = has("gui_running") ? '/tmp/.'.expand("%:t").'.'.strftime("%s") : ''
+	let l:suffix = has("gui_running") ? ' > '.l:tmp."'"  : '|xclip -i'
+	let l:prefix = has("gui_running") ? "xterm -bg rgb:4B/51/62 -fg white -fa mono -fs 10 -T 'FvwmMsg' -e '" : ''
+
+	call setreg('"',substitute(strtrans(@"),'\^@',' ','g'))
 
 	if a:0 > 0
-		call setreg('r',':!grep --line-buffered -rn "" ' . l:dir . '* 2>/dev/null | fzf --query=' .@".'|cut -d":" -f1,2|xclip -i')
+		call setreg('r',':!'.l:prefix.'grep --line-buffered -rn "" ' . l:dir . '* 2>/dev/null|fzf --query="'.@".'"|cut -d":" -f1,2'.l:suffix.'')
 	else
-		call setreg('r',':!find ' . l:dir . ' 2>/dev/null|fzf|head -n1|xclip -i')
+		call setreg('r',':!'.l:prefix.'find ' . l:dir . ' 2>/dev/null|fzf|head -n1'.l:suffix.'')
 	endif
 
 	normal @r
 
-	call setreg('r',l:regr)
-
-	let l:fname = split(Clip(),':')
+	if has("gui_running")
+"		call setreg('r',':!cat '.l:tmp.'|xclip -i && rm '.l:tmp.'')
+"		normal @r
+		let l:clip = system('cat '.l:tmp.' && rm '.l:tmp)
+		let l:fname = split(substitute(l:clip,'\n$','',''),':')
+	else
+		let l:fname = split(Clip(),':')
+	endif
 
 	if get(l:fname,0) != '0'
-		exec a:cmd . ' ' . l:fname[0]
+		exec a:cmd . '! ' . l:fname[0]
 
 		if get(l:fname,1) != '0'
 			exec l:fname[1]
 		endif
 	endif
+
+	call setreg('r',l:regr)
 endfunc
 
 func! Clip(...)
