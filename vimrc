@@ -14,6 +14,8 @@ func! Mngr()
 		let g:netrw_chgwin=2
 
 		exec 'Ve|vert res 25'
+	else
+		exec 'vert res 25'
 	endif
 endfunc
 
