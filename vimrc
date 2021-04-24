@@ -75,6 +75,13 @@ endfunc
 
 syntax on
 
+if has("autocmd")
+	autocmd BufReadPost *
+		\ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+		\ |   exe "normal! g`\""
+		\ | endif
+endif
+
 let g:netrw_banner=0
 let g:netrw_liststyle=3
 let g:netrw_list_hide='\(^\|\s\s\)\zs\.\S\+'
