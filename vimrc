@@ -77,10 +77,10 @@ syntax on
 
 if has("autocmd")
 	autocmd BufReadPost *
-<<<<<<< HEAD
 				\ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
 				\ |   exe "normal! g`\""
 				\ | endif
+
 	if exists("+omnifunc")
 		autocmd Filetype *
 					\ if &omnifunc == "" |
@@ -88,11 +88,6 @@ if has("autocmd")
 					\ endif
 		set completeopt=longest,menuone
 	endif
-=======
-		\ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
-		\ |   exe "normal! g`\""
-		\ | endif
->>>>>>> 91e0d894efe90286ac7f9f951d698b6daa12fff0
 endif
 
 let g:netrw_banner=0
