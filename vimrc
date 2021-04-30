@@ -77,15 +77,16 @@ syntax on
 
 if has("autocmd")
 	autocmd BufReadPost *
-				\ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
-				\ |   exe "normal! g`\""
-				\ | endif
+		\ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+			\ |   exe "normal! g`\""
+		\ | endif
 
 	if exists("+omnifunc")
 		autocmd Filetype *
-					\ if &omnifunc == "" |
-					\   setlocal omnifunc=syntaxcomplete#Complete |
-					\ endif
+			\ if &omnifunc == "" |
+				\   setlocal omnifunc=syntaxcomplete#Complete |
+			\ endif
+
 		set completeopt=longest,menuone
 	endif
 endif
